@@ -791,6 +791,12 @@ async function updateVideoSettings(identifier) {
     } else if(qualityValue === "worst") {
         $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:last`).val());
     }
+    else if(qualityValue === "320k") {
+        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:320`).val());
+    }
+    else if(qualityValue === "192k") {
+        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:192`).val());
+    }
     let isAudio = typeValue === "audio";
     for(const elem of $(card).find('option')) {
         if($(elem).hasClass("video")) {

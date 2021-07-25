@@ -21,19 +21,19 @@ class DownloadQuery extends Query {
         let args = [];
         let output = path.join(this.environment.settings.downloadPath, Utils.resolvePlaylistPlaceholders(this.environment.settings.nameFormat, this.playlistMeta));
         if(this.video.audioOnly) {
-            let numeralAudioQuality = (this.video.audioQuality === "best") ? "0" : "9";
+            let numeralAudioQuality = (this.video.audioQuality === "best") ? "0": "9";
             const audioOutputFormat = this.environment.settings.audioOutputFormat;
             args = [
                 '--extract-audio', '--audio-quality', numeralAudioQuality,
                 '--ffmpeg-location', this.environment.paths.ffmpeg,
                 '--no-mtime',
                 '-o', output,
-                '--output-na-placeholder', ""
+                '--output-na-placeholder', "-x"
             ];
             if(audioOutputFormat !== "none") {
                 args.push('--audio-format', audioOutputFormat);
             }
-            if(audioOutputFormat === "m4a" || audioOutputFormat === "mp3" || audioOutputFormat === "none") {
+            if(audioOutputFormat === "mp3" || audioOutputFormat === "none") {
                 args.push("--embed-thumbnail");
             }
         } else {
@@ -65,6 +65,7 @@ class DownloadQuery extends Query {
                     '--output-na-placeholder', ""
                 ];
             }
+
             if (this.video.downloadSubs && this.video.subLanguages.length > 0) {
                 this.progressBar.setInitial("Downloading subtitles");
                 args.push("--write-sub");
