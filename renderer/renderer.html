@@ -58,8 +58,10 @@
         </select>
         <select title="Quality" id="download-quality" class="custom-select w-auto rounded" aria-label="Quality option for the whole queue">
             <option value="best" selected>Best</option>
+            <option class="audio" value="320k" selected>320k</option>
+            <option class="audio" value="192k" selected>192k</option>
+            <option class="audio" value="160k" selected>160k</option>
             <option value="worst">Worst</option>
-            <option value="192k">192</option>
         </select>
         <span class="spacer"></span>
         <div class="dropdown dropup">
@@ -105,10 +107,10 @@
                 <div class="col-6">
                     <select class="custom-select download-quality">
                         <option class="audio" value="best" selected>Best</option>
+                        <option class="audio" value="320k" selected>320k</option>
+                        <option class="audio" value="192k" selected>192k</option>
+                        <option class="audio" value="160k" selected>160k</option>
                         <option class="audio" value="worst">Worst</option>
-                        <option class="audio" value="192k" >192k</option>
-                        
-
                     </select>
                     <p class="metadata right"></p>
                 </div>
@@ -226,7 +228,7 @@
                     <input type="file" class="custom-file-input" id="fileInput">
                     <label id="fileInputLabel" class="custom-file-label" for="fileInput">Click to select cookies.txt</label>
                 </div>
-                <a target="_blank" href="https://github.com/alexandrus21a/youtube-dl-gui/wiki/Tutorial:-Private-videos-&-playlists">What is a cookies.txt file?</a>
+                <a target="_blank" href="https://github.com/Alexandrus21a/youtube-dl-gui/wiki/Tutorial:-Private-videos-&-playlists">What is a cookies.txt file?</a>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn removeCookies btn-dark">Remove cookies</button>
@@ -241,7 +243,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="settingsModalLabel">App settings</h5>
-                <a class="help-button" target="_blank" href="https://github.com/alexandrus21a/youtube-dl-gui/wiki/Settings" title="Help for settings"><i class="bi bi-question-circle"></i></a>
+                <a class="help-button" target="_blank" href="https://github.com/Alexandrus21a/youtube-dl-gui/wiki/Settings" title="Help for settings"><i class="bi bi-question-circle"></i></a>
                 <button type="button" class="close dismiss" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">

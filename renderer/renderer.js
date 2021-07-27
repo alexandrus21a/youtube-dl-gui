@@ -788,14 +788,17 @@ async function updateVideoSettings(identifier) {
     const classValue = typeValue === "videoOnly" ? "video" : typeValue;
     if(qualityValue === "best") {
         $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:first`).val());
+    }
+    if(qualityValue === "320k") {
+        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:first`).val());
+    }
+    if(qualityValue === "192k") {
+        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:first`).val());
+    }
+    if(qualityValue === "160k") {
+        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:first`).val());
     } else if(qualityValue === "worst") {
         $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:last`).val());
-    }
-    else if(qualityValue === "320k") {
-        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:320`).val());
-    }
-    else if(qualityValue === "192k") {
-        $(card).find('.custom-select.download-quality').val($(card).find(`.custom-select.download-quality option.${classValue}:192`).val());
     }
     let isAudio = typeValue === "audio";
     for(const elem of $(card).find('option')) {

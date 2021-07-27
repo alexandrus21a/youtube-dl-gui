@@ -1,6 +1,6 @@
 {
   "name": "youtube-dl-gui",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Open Video Downloader",
   "main": "main.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "gui",
     "interface"
   ],
-  "author": "Jelle Glebbeek",
+  "author": "Alexandrus21a",
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "electron": "^11.2.0",
@@ -42,8 +42,6 @@
     "dotenv": "^8.2.0",
     "electron-updater": "^4.3.8",
     "execa": "^4.1.0",
-    "ffmpeg": "0.0.4",
-    "ffmpeg-static": "^4.4.0",
     "iso-639-2": "^2.0.0",
     "jquery": "^3.5.1",
     "mkdirp": "^1.0.4",
@@ -53,7 +51,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexandrus21a/youtube-dl-gui.git"
+    "url": "https://github.com/Alexandrus21a/youtube-dl-gui.git"
   },
   "build": {
     "afterPack": "./build/appimage-fix.js",
@@ -64,7 +62,7 @@
       "packElevateHelper": false
     },
     "productName": "Open Video Downloader",
-    "copyright": "Copyright © 2020-2021 Jelle Glebbeek",
+    "copyright": "Copyright © 2020-2021 Alexandrus21a",
     "win": {
       "target": "nsis",
       "icon": "renderer/img/icon.ico",
