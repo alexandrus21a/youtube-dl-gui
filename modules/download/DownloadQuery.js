@@ -19,36 +19,29 @@ class DownloadQuery extends Query {
 
     async connect() {
         let args = [];
-        let output = path.join(
-            this.environment.settings.downloadPath,
-            Utils.resolvePlaylistPlaceholders(
-                this.environment.settings.nameFormat,
-                this.playlistMeta
-            )
-        );
+        let output = path.join(this.environment.settings.downloadPath, Utils.resolvePlaylistPlaceholders(this.environment.settings.nameFormat, this.playlistMeta));
         if (this.video.audioOnly) {
             if (this.video.audioQuality === "best") {
-                let numeralAudioQuality = this.video.audioQuality === "best" ? "0" : "9";
+                let AudioQuality = "0";
             }
-            if (this.video.audioQuality === "320k") {
-                let numeralAudioQuality = this.video.audioQuality === "best" ? "0" : "9";
-                var ffmpegAQ = '320k';
+            if (this.video.audioQuality === "320") {
+                let AudioQuality = "320k";
             }
-            if (this.video.audioQuality === "192k") {
-                let numeralAudioQuality =
-                    this.video.audioQuality === "best" ? "0" : "9";
-                var ffmpegAQ = '192k';
+            if (this.video.audioQuality === "192") {
+                let AudioQuality = "192k";
             }
-            if (this.video.audioQuality === "160k") {
-                let numeralAudioQuality =
-                    this.video.audioQuality === "best" ? "0" : "9";
-                var ffmpegAQ = '160k';
+            if (this.video.audioQuality === "160") {
+                let AudioQuality = "160k";
             }
+            if (this.video.audioQuality === "128") {
+                let AudioQuality = "128k";
+            }
+
             const audioOutputFormat = this.environment.settings.audioOutputFormat;
             args = [
                 "--extract-audio",
                 "--audio-quality",
-                9,
+                AudioQuality,
                 "--ffmpeg-location",
                 this.environment.paths.ffmpeg,
                 "--no-mtime",
@@ -57,23 +50,15 @@ class DownloadQuery extends Query {
                 "--output-na-placeholder",
                 "",
             ];
+            console.log(AudioQuality);
             if (audioOutputFormat !== "none") {
                 args.push("--audio-format", audioOutputFormat);
             }
-            if (
-                audioOutputFormat === "m4a" ||
-                audioOutputFormat === "mp3" ||
-                audioOutputFormat === "none"
-            ) {
+            if (audioOutputFormat === "m4a" || audioOutputFormat === "mp3" || audioOutputFormat === "none") {
                 args.push("--embed-thumbnail");
             }
         } else {
-            if (
-                this.video.formats.length !== 0 ||
-                this.video.audioQuality === "320k" ||
-                this.video.audioQuality === "192k" ||
-                this.video.audioQuality === "160k"
-            ) {
+            if (this.video.formats.length !== 0) {
                 let format;
                 if (this.video.videoOnly) {
                     format = `bestvideo[height=${this.format.height}][fps=${this.format.fps}]/bestvideo[height=${this.format.height}]/best[height=${this.format.height}]/bestvideo/best`;
@@ -89,8 +74,6 @@ class DownloadQuery extends Query {
                 args = [
                     "-f",
                     format,
-                    "-ab",
-                    ffmpegAQ,
                     "-o",
                     output,
                     "--ffmpeg-location",
@@ -101,8 +84,6 @@ class DownloadQuery extends Query {
                 ];
             } else {
                 args = [
-                    "-ab",
-                    ffmpegAQ,
                     "-o",
                     output,
                     "--ffmpeg-location",
