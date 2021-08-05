@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for youtube-dl-gui
+about: Suggest an idea for youtubify
 title: ''
 labels: 'feature request'
 assignees: ''

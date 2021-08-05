@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-    <title>Open Video Downloader</title>
+    <title>youtubify</title>
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="lib/select2.min.css">
@@ -12,6 +12,7 @@
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
     <script src="lib/select2.min.js"></script>
+    <script src="../node_modules/sortablejs/Sortable.min.js"></script>
 </head>
 
 <body>
@@ -21,11 +22,9 @@
             <div class="input-group">
                 <input type="text" class="form-control" id="add-url" placeholder="Enter a video/playlist URL to add to the queue">
                 <div class="input-group-append">
-                    <button type="button" id="add-url-btn" class="btn btn-dark" title="Add video to queue"><i
-                            class="bi bi-plus"></i></button>
+                    <button type="button" id="add-url-btn" class="btn btn-dark" title="Add video to queue"><i class="bi bi-plus"></i></button>
                 </div>
-                <button id="settingsBtn" title="Settings" type="button" class="btn btn-dark"><i
-                        class="bi bi-gear"></i></button>
+                <button id="settingsBtn" title="Settings" type="button" class="btn btn-dark"><i class="bi bi-gear"></i></button>
             </div>
         </form>
     </div>
@@ -51,26 +50,24 @@
             </div>
         </div>
         <div class="row buttons d-flex flex-row justify-content-center">
-            <button id="locationBtn" title="Download location" class="btn btn-dark"><i
-                    class="bi bi-folder"></i></button>
+            <button id="locationBtn" title="Download location" class="btn btn-dark"><i class="bi bi-folder"></i></button>
             <button id="authBtn" title="Add authentication" class="btn btn-dark"><i class="bi bi-key"></i></button>
-            <button id="subtitleBtn" title="Disable subtitles" class="btn btn-dark"><i title="Subtitles disabled"
-                    class="bi-card-text-strike mb-3"></i></button>
+            <button id="subtitleBtn" title="Disable subtitles" class="btn btn-dark"><i title="Subtitles disabled" class="bi-card-text-strike mb-3"></i></button>
             <span class="spacer"></span>
             <select title="Download type" id="download-type" class="custom-select w-auto rounded" aria-label="Download type option for the whole queue">
-                <option value="video" selected>Video + audio</option>
-                <option value="audio">Audio only</option>
-                <option value="videoOnly">Video only</option>
-            </select>
+            <option value="video" selected>Video + audio</option>
+            <option value="audio">Audio only</option>
+            <option value="videoOnly">Video only</option>
+        </select>
             <select title="Quality" id="download-quality" class="custom-select w-auto rounded" aria-label="Quality option for the whole queue">
-                <option value="best" selected>Best</option>
-                <option value="worst">Worst</option>
-            </select>
+            <option value="best" selected>Best</option>
+            <option value="worst">Worst</option>
+        </select>
             <span class="spacer"></span>
             <div class="dropdown dropup">
                 <button class="btn btn-dark dropdown-toggle" type="button" id="whenDoneButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    When done
-                </button>
+                When done
+            </button>
                 <ul id="whenDoneOptions" class="dropdown-menu" aria-labelledby="whenDoneButton">
                     <li><a class="dropdown-item dropdown-selected" href="#">Do nothing</a></li>
                     <li class="dropdown-divider"></li>
@@ -78,14 +75,14 @@
                 </ul>
             </div>
             <span class="spacer"></span>
-            <button type="button" id="clearBtn" title="Clear queue" class="btn btn-dark rounded" disabled><i
-                    class="bi bi-trash"></i></button>
+            <button type="button" id="clearBtn" title="Clear queue" class="btn btn-dark rounded" disabled><i class="bi bi-trash"></i></button>
             <button id="downloadBtn" title="Download queue" class="btn btn-highlight rounded" disabled>Download</button>
         </div>
     </div>
 
     <div class="template video-card" id="id">
         <div class="row mx-auto">
+            <div class="handle"><i class="bi bi-grip-vertical"></i></div>
             <div class="col-4">
                 <img class="mt-1" alt="Video thumbnail" nonce="imgErr" src="img/plain-placeholder.png" onerror="this.onerror=null;this.src='img/plain-placeholder.png';">
             </div>
@@ -102,21 +99,30 @@
                 <div class="row options">
                     <div class="col-6">
                         <select class="custom-select download-type">
-                            <option value="video" selected>Video + Audio</option>
-                            <option value="audio">Audio only</option>
-                            <option value="videoOnly">Video only</option>
-                        </select>
+                        <option value="video" selected>Video + Audio</option>
+                        <option value="audio">Audio only</option>
+                        <option value="videoOnly">Video only</option>
+                    </select>
+                        <select class="custom-select download-encoding">
+                        <option class="none" value="none" selected>Video codec</option>
+                    </select>
                         <p class="metadata left"></p>
                     </div>
                     <div class="col-6">
                         <select class="custom-select download-quality">
-                            <option class="audio" value="best" selected>Best</option>
-                            <option class="audio" value="320">320k</option>
-                            <option class="audio" value="192">192k</option>
-                            <option class="audio" value="160">160k</option>
-                            <option class="audio" value="128">128k</option>
-                            <option class="audio" value="worst">Worst</option>
-                        </select>
+                        <option class="audio" value="best" selected>Best</option>
+                        <option class="audio" value="worst">Worst</option>
+                        <option class="audio" value="320k">320k</option>
+                        <option class="audio" value="256k">256k</option>
+                        <option class="audio" value="224k">224k</option>
+                        <option class="audio" value="192k">192k</option>
+                        <option class="audio" value="160k">160k</option>
+                        <option class="audio" value="128k">128k</option>
+                        <option class="audio" value="96k">96k</option>
+                    </select>
+                        <select class="custom-select download-audio-encoding">
+                        <option class="none" value="none" selected>Audio codec</option>
+                    </select>
                         <p class="metadata right"></p>
                     </div>
                 </div>
@@ -220,6 +226,27 @@
         </div>
     </div>
 
+    <div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
+        <div class="modal-xl modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logModalLabel">Download Log</h5>
+                    <button type="button" class="close dismiss" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="log p-3 rounded w-100">Loading log...</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" title="Save as file" class="btn save btn-dark">Save as file</button>
+                    <button type="button" class="btn btn-dark dismiss">Close</button>
+                </div>
+                <span class="identifier d-none"></span>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
         <div class="modal-xl modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -231,11 +258,9 @@
                     <p>Add a cookies.txt file to authenticate with.</p>
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" id="fileInput">
-                        <label id="fileInputLabel" class="custom-file-label" for="fileInput">Click to select
-                            cookies.txt</label>
+                        <label id="fileInputLabel" class="custom-file-label" for="fileInput">Click to select cookies.txt</label>
                     </div>
-                    <a target="_blank" href="https://github.com/Alexandrus21a/youtube-dl-gui/wiki/Tutorial:-Private-videos-&-playlists">What
-                        is a cookies.txt file?</a>
+                    <a target="_blank" href="https://github.com/alexandrus21a/youtubify/wiki/Tutorial:-Private-videos-&-playlists">What is a cookies.txt file?</a>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn removeCookies btn-dark">Remove cookies</button>
@@ -250,7 +275,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="settingsModalLabel">App settings</h5>
-                    <a class="help-button" target="_blank" href="https://github.com/Alexandrus21a/youtube-dl-gui/wiki/Settings" title="Help for settings"><i class="bi bi-question-circle"></i></a>
+                    <a class="help-button" target="_blank" href="https://github.com/alexandrus21a/youtubify/wiki/Settings" title="Help for settings"><i class="bi bi-question-circle"></i></a>
                     <button type="button" class="close dismiss" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
@@ -258,32 +283,27 @@
                     <div class="mb-4">
                         <label for="sizeSetting" class="form-label">Download size calculation</label>
                         <select class="custom-select d-block rounded w-auto mb-2" id="sizeSetting">
-                            <option value="full" selected>Automatically calculate</option>
-                            <option value="click">Click to calculate</option>
-                        </select>
+                        <option value="full" selected>Automatically calculate</option>
+                        <option value="click">Click to calculate</option>
+                    </select>
                         <input class="check-input" type="checkbox" value="" id="calculateTotalSize">
                         <label class="check-label" for="calculateTotalSize">Calculate total download size</label>
                     </div>
                     <div class="mb-4">
-                        <label for="maxConcurrent" id="concurrentLabel" class="form-label d-inline-block">Max concurrent
-                            jobs</label>
+                        <label for="maxConcurrent" id="concurrentLabel" class="form-label d-inline-block">Max concurrent jobs</label>
                         <input type="range" class="form-range w-50 d-block align-middle" min="1" max="32" id="maxConcurrent">
                         <button type="button" class="btn btn-dark" id="defaultConcurrent">Reset to default</button>
                     </div>
-                    <div class="mb-1">
-                        <input class="check-input" type="checkbox" value="" id="autoFillClipboard">
-                        <label class="check-label" for="autoFillClipboard">Automatically fill in copied links</label>
-                    </div>
-                    <hr />
+                    <hr/>
                     <h3>Appearance</h3>
                     <div class="mb-4">
                         <label for="theme" class="form-label">Theme</label>
                         <select class="custom-select d-block rounded w-auto mb-2" id="theme">
-                            <option value="dark" selected>Dark</option>
-                            <option value="light">Light</option>
-                        </select>
+                        <option value="dark" selected>Dark</option>
+                        <option value="light">Light</option>
+                    </select>
                     </div>
-                    <hr />
+                    <hr/>
                     <h3>Auto-update</h3>
                     <div class="mb-1">
                         <input class="check-input" type="checkbox" value="" id="updateBinary">
@@ -293,7 +313,7 @@
                         <input class="check-input" type="checkbox" value="" id="updateApplication">
                         <label class="check-label" for="updateApplication">Auto-update app</label>
                     </div>
-                    <hr />
+                    <hr/>
                     <h3>Network</h3>
                     <div class="mb-4">
                         <label for="proxySetting" class="form-label">Proxy (if empty no proxy will be used)</label>
@@ -303,38 +323,50 @@
                         <label for="ratelimitSetting" class="form-label">Rate-limit per video (KB/s)</label>
                         <input id="ratelimitSetting" class="form-control" type="number" value="" placeholder="Rate-limit in KB/s">
                     </div>
-                    <hr />
+                    <hr/>
+                    <h3>Input</h3>
+                    <div class="mb-1">
+                        <input class="check-input" type="checkbox" value="" id="autoFillClipboard">
+                        <label class="check-label" for="autoFillClipboard">Automatically fill in copied links</label>
+                    </div>
+                    <div class="mb-1">
+                        <input class="check-input" type="checkbox" value="" id="noPlaylist">
+                        <label class="check-label" for="noPlaylist">Download only video when link contains list & video</label>
+                    </div>
+                    <div class="mb-1">
+                        <input class="check-input" type="checkbox" value="" id="globalShortcut">
+                        <label class="check-label" for="globalShortcut">Enable global paste & download shortcuts</label>
+                    </div>
+                    <hr/>
                     <h3>Output</h3>
                     <div class="mb-3">
                         <label for="outputFormat" class="form-label">Attempt to use output format:</label>
                         <select class="custom-select d-block rounded w-auto mb-2" id="outputFormat">
-                            <option value="none" selected>Auto</option>
-                            <option value="mp4">MP4</option>
-                            <option value="mkv">MKV</option>
-                        </select>
+                        <option value="none" selected>Auto</option>
+                        <option value="mp4">MP4</option>
+                        <option value="mkv">MKV</option>
+                    </select>
                     </div>
                     <div class="mb-3">
-                        <label for="audioOutputFormat" class="form-label">Force audio-only downloads to use output
-                            format:</label>
+                        <label for="audioOutputFormat" class="form-label">Force audio-only downloads to use output format:</label>
                         <select class="custom-select d-block rounded w-auto mb-2" id="audioOutputFormat">
-                            <option value="none" selected>Auto</option>
-                            <option value="mp3">MP3</option>
-                            <option value="m4a">M4A</option>
-                            <option value="opus">Opus</option>
-                            <option value="vorbis">Vorbis</option>
-                            <option value="wav">WAV</option>
-                            <option value="aac">AAC</option>
-                            <option value="flac">FLAC</option>
-                        </select>
+                        <option value="none" selected>Auto</option>
+                        <option value="mp3">MP3</option>
+                        <option value="m4a">M4A</option>
+                        <option value="opus">Opus</option>
+                        <option value="vorbis">Vorbis</option>
+                        <option value="wav">WAV</option>
+                        <option value="aac">AAC</option>
+                        <option value="flac">FLAC</option>
+                    </select>
                     </div>
                     <div class="mb-1">
                         <label for="nameFormat" class="form-label">Filename format:</label>
                         <select class="custom-select d-block rounded w-auto mb-2" id="nameFormat">
-                            <option value="%(title).200s-(%(height)sp%(fps).0d).%(ext)s" selected>Title + quality
-                            </option>
-                            <option value="%(title).200s.%(ext)s">Title</option>
-                            <option value="custom">Custom</option>
-                        </select>
+                        <option value="%(title).200s-(%(height)sp%(fps).0d).%(ext)s" selected>Title + quality</option>
+                        <option value="%(title).200s.%(ext)s">Title</option>
+                        <option value="custom">Custom</option>
+                    </select>
                     </div>
                     <div class="mb-4">
                         <input id="nameFormatCustom" class="form-control" type="text" value="%(title).200s-(%(height)sp%(fps).0d).%(ext)s" disabled>
@@ -351,7 +383,7 @@
                         <input class="check-input" type="checkbox" value="" id="keepUnmerged">
                         <label class="check-label" for="keepUnmerged">Keep unmerged files</label>
                     </div>
-                    <hr />
+                    <hr/>
                     <h3>Advanced</h3>
                     <div class="mb-1">
                         <input class="check-input" type="checkbox" value="" id="taskList">
@@ -365,15 +397,19 @@
                         <input class="check-input" type="checkbox" value="" id="validateCertificate">
                         <label class="check-label" for="validateCertificate">Validate HTTPS certificates</label>
                     </div>
+                    <div class="mb-1">
+                        <input class="check-input" type="checkbox" value="" id="enableEncoding">
+                        <label class="check-label" for="enableEncoding">Show available codecs to download</label>
+                    </div>
                     <div>
                         <label for="splitMode" class="form-label">Split playlists into separate videos when:</label>
                         <select class="custom-select d-block rounded w-auto mb-2" id="splitMode">
-                            <option value="0">never split</option>
-                            <option value="49" selected>less than 50 videos</option>
-                            <option value="99">less than 100 videos</option>
-                            <option value="149">less than 150 videos</option>
-                            <option value="199">less than 200 videos</option>
-                        </select>
+                        <option value="0">never split</option>
+                        <option value="49" selected>less than 50 videos</option>
+                        <option value="99">less than 100 videos</option>
+                        <option value="149">less than 150 videos</option>
+                        <option value="199">less than 200 videos</option>
+                    </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -389,8 +425,8 @@
         <div class="toast-header">
             <strong class="mr-auto update-title">There is an update available!</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <span aria-hidden="true">&times;</span>
+        </button>
         </div>
         <div class="toast-body update-body"></div>
     </div>
@@ -399,8 +435,8 @@
         <div class="toast-header">
             <strong class="mr-auto task-list-title">Do you want to restore your queue?</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <span aria-hidden="true">&times;</span>
+        </button>
         </div>
         <div class="toast-body task-list-body"></div>
     </div>

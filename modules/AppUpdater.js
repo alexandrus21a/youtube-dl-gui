@@ -25,15 +25,15 @@ class AppUpdater {
     }
 
     checkUpdate() {
-        if(!this.isUpdateAllowed()) return;
+        if (!this.isUpdateAllowed()) return;
         autoUpdater.checkForUpdates().then((result) => {
-            if(result.downloadPromise != null) {
-                if(process.platform === "darwin") {
+            if (result.downloadPromise != null) {
+                if (process.platform === "darwin") {
                     //Show only toast on mac
                     this.win.webContents.send('toast', {
                         type: "update",
                         title: "An update has been found",
-                        body: `Update ${result.updateInfo.releaseName} is out now! <br> <a target="_blank" href="https://github.com/Alexandrus21a/youtube-dl-gui/releases/latest">Download on GitHub</a>`
+                        body: `Update ${result.updateInfo.releaseName} is out now! <br> <a target="_blank" href="https://github.com/alexandrus21a/youtubify/releases/latest">Download on GitHub</a>`
                     });
                 } else {
                     this.newVersion = result.updateInfo.releaseName;
@@ -60,7 +60,7 @@ class AppUpdater {
 
     setUpdateSetting(value) {
         autoUpdater.autoInstallOnAppQuit = !!value;
-        if(value === true) {
+        if (value === true) {
             this.checkUpdate();
         }
     }

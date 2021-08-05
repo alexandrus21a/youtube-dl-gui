@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Ask a question about youtube-dl-gui
+about: Ask a question about youtubify
 title: ''
 labels: question
 assignees: ''
@@ -11,7 +11,7 @@ assignees: ''
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
 **Describe the question you have.**
-A clear and concise question about youtube-dl-gui.
+A clear and concise question about youtubify.
 
 **Additional context**
 Add any other context or screenshots about the question here.

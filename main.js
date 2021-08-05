@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, shell, clipboard, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell, clipboard } = require('electron');
 const Environment = require('./modules/Environment');
 const path = require('path');
 const QueryManager = require("./modules/QueryManager");
@@ -22,11 +22,13 @@ analytics = new Analytics(app);
 analytics.initSentry().then((res) => console.log(res));
 
 function sendLogToRenderer(log, isErr) {
-    if(win == null) return;
-    win.webContents.send("log", {log: log, isErr: isErr});
+    if (win == null) return;
+    win.webContents.send("log", { log: log, isErr: isErr });
 }
 
 function startCriticalHandlers(env) {
+    env.win = win;
+
     win.on('maximize', () => {
         win.webContents.send("maximized", true)
     });
@@ -47,35 +49,40 @@ function startCriticalHandlers(env) {
 
     taskList = new TaskList(env.paths, queryManager)
 
-    if(env.settings.updateBinary) {
+    if (env.settings.updateBinary) {
         let binaryUpdater = new BinaryUpdater(env.paths, win);
-        win.webContents.send("binaryLock", {lock: true, placeholder: `Checking for a new version of ytdl...`})
+        win.webContents.send("binaryLock", { lock: true, placeholder: `Checking for a new version of ytdl...` })
         binaryUpdater.checkUpdate().finally(() => {
-            win.webContents.send("binaryLock", {lock: false});
+            win.webContents.send("binaryLock", { lock: false });
             taskList.load();
             clipboardWatcher.startPolling();
         });
-    } else if(env.settings.taskList) {
+    } else if (env.settings.taskList) {
         taskList.load();
     }
 
+    //Send the saved download type to the renderer
+    win.webContents.send("videoAction", { action: "setDownloadType", type: env.settings.downloadType });
+
     env.errorHandler = new ErrorHandler(win, queryManager, env);
 
-    if(appStarting) {
+    if (appStarting) {
         appStarting = false;
-
-        globalShortcut.register('Shift+CommandOrControl+V', async () => {
-            win.webContents.send("addShortcut", clipboard.readText());
-        });
-
-        globalShortcut.register('Shift+CommandOrControl+D', async () => {
-            win.webContents.send("downloadShortcut");
-        });
 
         //Restore the videos from last session
         ipcMain.handle("restoreTaskList", () => {
             taskList.restore()
         });
+
+        //Send the log for a specific download to renderer
+        ipcMain.handle("getLog", (event, identifier) => {
+            return env.logger.get(identifier);
+        });
+
+        //Save the log when renderer asks main
+        ipcMain.handle("saveLog", (event, identifier) => {
+            return env.logger.save(identifier);
+        })
 
         //Catch all console.log calls, print them to stdout and send them to the renderer devtools.
         console.log = (arg) => {
@@ -91,14 +98,14 @@ function startCriticalHandlers(env) {
 
         ipcMain.handle('iconProgress', (event, args) => {
             win.setProgressBar(args);
-            if(args === 1) {
-                if(process.platform === "darwin") app.dock.bounce();
+            if (args === 1) {
+                if (process.platform === "darwin") app.dock.bounce();
                 else win.flashFrame(true);
                 win.setProgressBar(-1);
             }
         });
 
-        ipcMain.handle('errorReport', async (event, args) => {
+        ipcMain.handle('errorReport', async(event, args) => {
             return await env.errorHandler.reportError(args);
         });
 
@@ -114,7 +121,7 @@ function startCriticalHandlers(env) {
 
         let appUpdater = new AppUpdater(env, win);
         env.appUpdater = appUpdater;
-        if(!env.paths.appPath.includes("\\AppData\\Local\\Temp\\") && !env.paths.appPath.includes("WindowsApps")) {
+        if (!env.paths.appPath.includes("\\AppData\\Local\\Temp\\") && !env.paths.appPath.includes("WindowsApps")) {
             //Don't check the app when it is in portable mode
             appUpdater.checkUpdate();
         }
@@ -135,7 +142,7 @@ function startCriticalHandlers(env) {
             return queryManager.getSelectedSubtitles(args.identifier);
         });
 
-        ipcMain.handle('videoAction', async (event, args) => {
+        ipcMain.handle('videoAction', async(event, args) => {
             switch (args.action) {
                 case "stop":
                     queryManager.stopDownload(args.identifier);
@@ -145,8 +152,8 @@ function startCriticalHandlers(env) {
                     break;
                 case "download":
                     if (args.downloadType === "all") queryManager.downloadAllVideos(args)
-                    else if(args.downloadType === "unified") queryManager.downloadUnifiedPlaylist(args);
-                    else if(args.downloadType === "single") queryManager.downloadVideo(args);
+                    else if (args.downloadType === "unified") queryManager.downloadUnifiedPlaylist(args);
+                    else if (args.downloadType === "single") queryManager.downloadVideo(args);
                     break;
                 case "entry":
                     queryManager.manage(args.url);
@@ -161,7 +168,7 @@ function startCriticalHandlers(env) {
                     queryManager.saveThumb(args.url);
                     break;
                 case "getSize":
-                    return await queryManager.getSize(args.identifier, args.formatLabel, args.audioOnly, args.videoOnly, args.clicked);
+                    return await queryManager.getSize(args.identifier, args.formatLabel, args.audioOnly, args.videoOnly, args.clicked, args.encoding, args.audioEncoding);
                 case "setSubtitles":
                     queryManager.setSubtitle(args);
                     break;
@@ -196,7 +203,7 @@ function createWindow(env) {
             contextIsolation: true
         }
     })
-    if(process.argv[2] === '--dev') {
+    if (process.argv[2] === '--dev') {
         win.webContents.openDevTools()
     }
     win.loadFile(path.join(__dirname, "renderer/renderer.html"))
@@ -210,13 +217,14 @@ function createWindow(env) {
     });
 }
 
-app.on('ready', async () => {
+app.on('ready', async() => {
+    app.setAppUserModelId("com.alexandrus21a.youtubify");
     env = new Environment(app, analytics);
     await env.initialize();
     createWindow(env);
 })
 
-app.on('before-quit', async () => {
+app.on('before-quit', async() => {
     await taskList.save();
 })
 
@@ -235,8 +243,7 @@ app.on('activate', () => {
 });
 
 //Creates the input menu to show on right click
-const InputMenu = Menu.buildFromTemplate([
-    {
+const InputMenu = Menu.buildFromTemplate([{
         label: 'Cut',
         role: 'cut',
     },
@@ -263,14 +270,12 @@ ipcMain.handle('openInputMenu', () => {
 })
 
 ipcMain.handle('openCopyMenu', (event, content) => {
-    const CopyMenu = Menu.buildFromTemplate([
-        {
-            label: 'Copy link address',
-            click: () => {
-                clipboard.writeText(content);
-            }
+    const CopyMenu = Menu.buildFromTemplate([{
+        label: 'Copy link address',
+        click: () => {
+            clipboard.writeText(content);
         }
-    ]);
+    }]);
     CopyMenu.popup(win);
 })
 
@@ -293,27 +298,27 @@ ipcMain.handle("theme", () => {
 
 //Handle titlebar click events from the renderer process
 ipcMain.handle('titlebarClick', (event, arg) => {
-    if(arg === 'close') {
+    if (arg === 'close') {
         win.close()
-    } else if(arg === "minimize") {
+    } else if (arg === "minimize") {
         win.minimize()
-    } else if(arg === "maximize") {
-        if(win.isMaximized()) win.unmaximize();
+    } else if (arg === "maximize") {
+        if (win.isMaximized()) win.unmaximize();
         else win.maximize();
     }
 })
 
 //Show a dialog to select a folder, and return the selected value.
-ipcMain.handle('downloadFolder', async () => {
+ipcMain.handle('downloadFolder', async() => {
     await dialog.showOpenDialog(win, {
-        defaultPath:  env.settings.downloadPath,
+        defaultPath: env.settings.downloadPath,
         buttonLabel: "Set download location",
         properties: [
             'openDirectory',
             'createDirectory'
         ]
     }).then(result => {
-        if(result.filePaths[0] != null) {
+        if (result.filePaths[0] != null) {
             env.settings.downloadPath = result.filePaths[0];
             env.settings.save();
         }
@@ -321,12 +326,12 @@ ipcMain.handle('downloadFolder', async () => {
 });
 
 //Show a dialog to select a file, and return the selected value.
-ipcMain.handle('cookieFile', async (event,clear) => {
-    if(clear === true) {
+ipcMain.handle('cookieFile', async(event, clear) => {
+    if (clear === true) {
         env.settings.cookiePath = null;
         env.settings.save();
         return;
-    } else if(clear === "get") {
+    } else if (clear === "get") {
         return env.settings.cookiePath;
     }
     let result = await dialog.showOpenDialog(win, {
@@ -341,7 +346,7 @@ ipcMain.handle('cookieFile', async (event,clear) => {
             { name: "All Files", extensions: ["*"] },
         ],
     });
-    if(result.filePaths[0] != null) {
+    if (result.filePaths[0] != null) {
         env.settings.cookiePath = result.filePaths[0];
         env.settings.save();
     }
@@ -357,5 +362,3 @@ ipcMain.handle('messageBox', (event, args) => {
         buttons: [],
     });
 });
-
-
