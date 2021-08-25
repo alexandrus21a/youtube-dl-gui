@@ -26,17 +26,17 @@ class QueryManager {
         let metadataVideo = new Video(url, "metadata", this.environment);
         this.addVideo(metadataVideo);
         const initialQuery = await new InfoQuery(url, metadataVideo.identifier, this.environment).connect();
-        if(metadataVideo.error) return;
-        if(Utils.isYouTubeChannel(url)) {
+        if (metadataVideo.error) return;
+        if (Utils.isYouTubeChannel(url)) {
             const actualQuery = await new InfoQuery(initialQuery.entries[0].url, metadataVideo.identifier, this.environment).connect();
-            if(metadataVideo.error) return;
+            if (metadataVideo.error) return;
             this.removeVideo(metadataVideo);
-            if(actualQuery.entries == null || actualQuery.entries.length === 0) this.managePlaylist(initialQuery, url);
+            if (actualQuery.entries == null || actualQuery.entries.length === 0) this.managePlaylist(initialQuery, url);
             else this.managePlaylist(actualQuery, initialQuery.entries[0].url);
             return;
         }
 
-        switch(Utils.detectInfoType(initialQuery)) {
+        switch (Utils.detectInfoType(initialQuery)) {
             case "single":
                 this.manageSingle(initialQuery, url);
                 this.removeVideo(metadataVideo);
@@ -46,7 +46,7 @@ class QueryManager {
                 this.removeVideo(metadataVideo);
                 break;
             case "livestream":
-                this.environment.errorHandler.raiseError({code: "Not supported", description: "Livestreams are not yet supported."}, metadataVideo.identifier);
+                this.environment.errorHandler.raiseError({ code: "Not supported", description: "Livestreams are not yet supported." }, metadataVideo.identifier);
                 break;
             default:
                 //This.environment.errorHandler.raiseUnhandledError("Youtube-dl returned an empty object\n" + JSON.stringify(Utils.detectInfoType(initialQuery), null, 2), metadataVideo.identifier);
@@ -67,28 +67,28 @@ class QueryManager {
         this.addVideo(playlistVideo);
         const playlistQuery = new InfoQueryList(initialQuery, this.environment, new ProgressBar(this, playlistVideo));
         playlistQuery.start().then((videos) => {
-            if(videos.length > this.environment.settings.splitMode) {
+            if (videos.length > this.environment.settings.splitMode) {
                 let totalFormats = [];
                 let totalAudioCodecs = [];
                 playlistVideo.videos = videos;
-                for(const video of videos) {
-                    for(const audioCodec of video.audioCodecs) {
-                        if(!totalAudioCodecs.includes(audioCodec)) {
+                for (const video of videos) {
+                    for (const audioCodec of video.audioCodecs) {
+                        if (!totalAudioCodecs.includes(audioCodec)) {
                             totalAudioCodecs.push(audioCodec);
                         }
                     }
-                    for(const format of video.formats) {
+                    for (const format of video.formats) {
                         format.display_name = Format.getDisplayName(format.height, format.fps);
                         totalFormats.push(format);
                     }
                 }
                 //Dedupe totalFormats by height and fps
-                totalFormats = totalFormats.filter((v,i,a) => a.findIndex(t=>(t.height === v.height && t.fps === v.fps))===i);
+                totalFormats = totalFormats.filter((v, i, a) => a.findIndex(t => (t.height === v.height && t.fps === v.fps)) === i);
                 //Sort totalFormats DESC by height and fps
                 totalFormats.sort((a, b) => b.height - a.height || b.fps - a.fps);
                 const title = initialQuery.title == null ? url : initialQuery.title;
                 const uploader = initialQuery.uploader == null ? "Unknown" : initialQuery.uploader;
-                if(this.window != null) {
+                if (this.window != null) {
                     this.window.webContents.send("videoAction", {
                         action: "setUnified",
                         identifier: playlistVideo.identifier,
@@ -116,15 +116,15 @@ class QueryManager {
     addVideo(video) {
         this.managedVideos.push(video);
         let formats = [];
-        if(video.hasMetadata) {
-            for(const format of video.formats) {
+        if (video.hasMetadata) {
+            for (const format of video.formats) {
                 formats.push(format.serialize());
             }
         }
         let args = {
             action: "add",
             type: video.type,
-            identifier:  video.identifier,
+            identifier: video.identifier,
             url: video.url,
             title: video.title,
             duration: video.duration,
@@ -146,7 +146,7 @@ class QueryManager {
         downloadVideo.selectedAudioEncoding = args.audioEncoding;
         downloadVideo.audioOnly = args.type === "audio";
         downloadVideo.videoOnly = args.type === "videoOnly";
-        if(!downloadVideo.audioOnly) {
+        if (!downloadVideo.audioOnly) {
             for (const format of downloadVideo.formats) {
                 if (format.getDisplayName() === args.format) {
                     downloadVideo.selected_format_index = downloadVideo.formats.indexOf(format);
@@ -159,7 +159,7 @@ class QueryManager {
         downloadVideo.setQuery(new DownloadQuery(downloadVideo.url, downloadVideo, this.environment, progressBar));
         downloadVideo.query.connect().then(() => {
             //Backup done call, sometimes it does not trigger automatically from within the downloadQuery.
-            if(downloadVideo.error) return;
+            if (downloadVideo.error) return;
             downloadVideo.downloaded = true;
             downloadVideo.query.progressBar.done(downloadVideo.audioOnly);
             this.updateGlobalButtons();
@@ -170,15 +170,15 @@ class QueryManager {
         let videosToDownload = [];
         let unifiedPlaylists = [];
         let videoMetadata = [];
-        for(const videoObj of args.videos) {
+        for (const videoObj of args.videos) {
             let video = this.getVideo(videoObj.identifier);
             video.selectedEncoding = videoObj.encoding;
             video.selectedAudioEncoding = videoObj.audioEncoding;
-            if(video.videos == null) {
-                if(video.downloaded || video.type !== "single") continue;
+            if (video.videos == null) {
+                if (video.downloaded || video.type !== "single") continue;
                 video.audioOnly = videoObj.type === "audio";
                 video.videoOnly = videoObj.type === "videoOnly";
-                if(video.audioOnly) {
+                if (video.audioOnly) {
                     video.audioQuality = videoObj.format;
                 } else {
                     for (const format of video.formats) {
@@ -189,7 +189,7 @@ class QueryManager {
                     }
                 }
                 const videoMeta = Utils.getVideoInPlaylistMetadata(video.url, null, this.playlistMetadata);
-                if(videoMeta != null) {
+                if (videoMeta != null) {
                     videoMetadata.push(videoMeta);
                 }
                 video.audioQuality = (video.audioQuality != null) ? video.audioQuality : "best";
@@ -198,9 +198,9 @@ class QueryManager {
                 video.url = videoObj.url;
                 unifiedPlaylists.push(video);
                 this.getUnifiedVideos(video, video.videos, videoObj.type === "audio", videoObj.format, videoObj.downloadSubs);
-                for(const unifiedVideo of video.videos) {
+                for (const unifiedVideo of video.videos) {
                     const videoMeta = Utils.getVideoInPlaylistMetadata(unifiedVideo.url, video.url, this.playlistMetadata);
-                    if(videoMeta != null) {
+                    if (videoMeta != null) {
                         videoMetadata.push(videoMeta);
                     }
                     unifiedVideo.parentID = video.identifier;
@@ -211,9 +211,9 @@ class QueryManager {
         }
         let progressBar = new ProgressBar(this, "queue");
         let downloadList = new DownloadQueryList(videosToDownload, videoMetadata, this.environment, this, progressBar);
-        for(const unifiedPlaylist of unifiedPlaylists) { unifiedPlaylist.setQuery(downloadList) }
+        for (const unifiedPlaylist of unifiedPlaylists) { unifiedPlaylist.setQuery(downloadList) }
         downloadList.start().then(() => {
-            for(const unifiedPlaylist of unifiedPlaylists) { unifiedPlaylist.downloaded = true }
+            for (const unifiedPlaylist of unifiedPlaylists) { unifiedPlaylist.downloaded = true }
             this.updateGlobalButtons();
             const doneAction = new DoneAction();
             doneAction.executeAction(this.environment.doneAction);
@@ -222,7 +222,7 @@ class QueryManager {
 
     getUnifiedVideos(playlist, videos, audioOnly, selectedFormat, subtitles) {
         playlist.audioOnly = audioOnly
-        if(!playlist.audioOnly) {
+        if (!playlist.audioOnly) {
             for (const video of videos) {
                 video.downloadSubs = subtitles;
                 let gotFormatMatch = false;
@@ -240,7 +240,7 @@ class QueryManager {
                 }
             }
         } else {
-            for(const video of videos) {
+            for (const video of videos) {
                 video.downloadSubs = subtitles;
                 video.audioOnly = true;
                 video.audioQuality = (playlist.audioQuality != null) ? playlist.audioQuality : "best";
@@ -270,13 +270,13 @@ class QueryManager {
         video.selectedEncoding = encoding;
         video.selectedAudioEncoding = audioEncoding;
         const cachedSize = this.getCachedSize(video, formatLabel, audioOnly, videoOnly);
-        if(cachedSize != null) {
+        if (cachedSize != null) {
             //The size for this format was already looked up
             return cachedSize;
         } else {
             //Size was not already looked up
             //Try looking it up
-            if(!clicked && this.environment.settings.sizeMode === "click") {
+            if (!clicked && this.environment.settings.sizeMode === "click") {
                 //The sizemode is click so when the lookup from renderer is initial it should not do anything.
                 return null;
             } else {
@@ -288,13 +288,13 @@ class QueryManager {
     async querySize(video, formatLabel, format, audioOnly, videoOnly) {
         const sizeQuery = new SizeQuery(video, audioOnly, videoOnly, audioOnly ? formatLabel : format, this.environment);
         const result = await sizeQuery.connect();
-        if(audioOnly) {
-            if(formatLabel === "best") {
+        if (audioOnly) {
+            if (formatLabel === "best") {
                 video.bestAudioSize = result
             } else {
                 video.worstAudioSize = result
             }
-        } else if(videoOnly) {
+        } else if (videoOnly) {
             const formatCopy = Format.getFromDisplayName(formatLabel);
             formatCopy.filesize = result;
             video.videoOnlySizeCache.push(formatCopy);
@@ -303,14 +303,14 @@ class QueryManager {
     }
 
     getCachedSize(video, formatLabel, audioOnly, videoOnly) {
-        if(audioOnly) {
+        if (audioOnly) {
             let applicableSize;
             if (formatLabel === "best") applicableSize = video.bestAudioSize;
             else applicableSize = video.worstAudioSize;
             return applicableSize;
-        } else if(videoOnly) {
+        } else if (videoOnly) {
             const cachedFormat = video.videoOnlySizeCache.find(format => format.getDisplayName() === formatLabel);
-            if(cachedFormat != null) return cachedFormat.filesize;
+            if (cachedFormat != null) return cachedFormat.filesize;
             else return null;
         } else {
             return video.getFormatFromLabel(formatLabel).filesize;
@@ -326,7 +326,7 @@ class QueryManager {
 
     onError(identifier) {
         let video = this.getVideo(identifier);
-        if(video.query != null) {
+        if (video.query != null) {
             video.query.cancel();
         }
         video.error = true;
@@ -335,7 +335,7 @@ class QueryManager {
 
     updateProgress(video, progress_args) {
         let args;
-        if(video === "queue") {
+        if (video === "queue") {
             args = {
                 action: "totalProgress",
                 identifier: video.identifier,
@@ -351,7 +351,7 @@ class QueryManager {
         }
         try {
             this.window.webContents.send("videoAction", args);
-        } catch(e) {
+        } catch (e) {
             console.log("Blocked webContents IPC call, the window object was destroyed.");
         }
     }
@@ -368,31 +368,31 @@ class QueryManager {
         let video = this.getVideo(args.identifier);
         let file = video.filename;
         let fallback = false;
-        if(video.type === "playlist") {
+        if (video.type === "playlist") {
             shell.openPath(video.downloadedPath);
             return;
         }
-        if(file == null) {
+        if (file == null) {
             fs.readdir(video.downloadedPath, (err, files) => {
                 for (const searchFile of files) {
-                    if (file.substr(0, file.lastIndexOf(".")) === video.getFilename()) {
+                    if (searchFile.substr(0, searchFile.lastIndexOf(".")) === video.getFilename()) {
                         file = searchFile;
                         break;
                     }
                 }
-                if(file == null) {
+                if (file == null) {
                     fallback = true;
                     file = video.getFilename() + ".mp4";
                 }
             });
         }
-        if(args.type === "folder") {
-            if(fallback) {
+        if (args.type === "folder") {
+            if (fallback) {
                 shell.openPath(video.downloadedPath);
             } else {
                 shell.showItemInFolder(path.join(video.downloadedPath, file));
             }
-        } else if(args.type === "item") {
+        } else if (args.type === "item") {
             shell.openPath(path.join(video.downloadedPath, file));
         } else {
             console.error("Wrong openVideo type specified.")
@@ -402,15 +402,15 @@ class QueryManager {
     getUnifiedAvailableSubtitles(videos) {
         let totalSubs = [];
         let totalAutoGen = [];
-        for(const video of videos) {
-            if(video.subtitles != null && video.subtitles.length !== 0) {
+        for (const video of videos) {
+            if (video.subtitles != null && video.subtitles.length !== 0) {
                 totalSubs = totalSubs.concat(Object.keys(video.subtitles).map(sub => {
-                    return {iso: sub, name: Utils.getNameFromISO(sub)};
+                    return { iso: sub, name: Utils.getNameFromISO(sub) };
                 }))
             }
-            if(video.autoCaptions != null && video.autoCaptions.length !== 0) {
+            if (video.autoCaptions != null && video.autoCaptions.length !== 0) {
                 totalAutoGen = totalAutoGen.concat(Object.keys(video.autoCaptions).map(sub => {
-                    return {iso: sub, name: Utils.getNameFromISO(sub)};
+                    return { iso: sub, name: Utils.getNameFromISO(sub) };
                 }))
             }
         }
@@ -421,19 +421,19 @@ class QueryManager {
 
     getAvailableSubtitles(identifier, unified) {
         const video = this.getVideo(identifier);
-        if(unified) {
+        if (unified) {
             return this.getUnifiedAvailableSubtitles(video.videos);
         }
         let subs = [];
         let autoGen = [];
-        if(video.subtitles != null && video.subtitles.length !== 0) {
+        if (video.subtitles != null && video.subtitles.length !== 0) {
             subs = Object.keys(video.subtitles).map(sub => {
-                return {iso: sub, name: Utils.getNameFromISO(sub)};
+                return { iso: sub, name: Utils.getNameFromISO(sub) };
             })
         }
-        if(video.autoCaptions != null && video.autoCaptions.length !== 0) {
+        if (video.autoCaptions != null && video.autoCaptions.length !== 0) {
             autoGen = Object.keys(video.autoCaptions).map(sub => {
-                return {iso: sub, name: Utils.getNameFromISO(sub)};
+                return { iso: sub, name: Utils.getNameFromISO(sub) };
             })
         }
         return [subs.sort(Utils.sortSubtitles), autoGen.sort(Utils.sortSubtitles)];
@@ -465,7 +465,7 @@ class QueryManager {
             ],
             properties: ["createDirectory"]
         });
-        if(!result.canceled) {
+        if (!result.canceled) {
             fs.writeFileSync(result.filePath, JSON.stringify(video.serialize(), null, 3));
         }
     }
@@ -480,25 +480,25 @@ class QueryManager {
             ],
             properties: ["createDirectory"]
         });
-        if(!result.canceled) {
+        if (!result.canceled) {
             const path = result.filePath;
             const writer = fs.createWriteStream(path);
-            const response = await axios.get(link,{ responseType: "stream" });
+            const response = await axios.get(link, { responseType: "stream" });
             response.data.pipe(writer);
         }
     }
 
     updateGlobalButtons() {
         let videos = [];
-        for(const video of this.managedVideos) {
+        for (const video of this.managedVideos) {
             let downloadable = this.isDownloadable(video);
-            videos.push({identifier: video.identifier, downloadable: downloadable})
+            videos.push({ identifier: video.identifier, downloadable: downloadable })
         }
         this.window.webContents.send("updateGlobalButtons", videos);
     }
 
     setUnifiedSubtitle(videos, args) {
-        for(const video of videos) {
+        for (const video of videos) {
             video.downloadSubs = args.enabled;
             video.selectedSubs = [args.subs, args.autoGen];
             video.subLanguages = [...new Set([...args.subs, ...args.autoGen])];
@@ -507,7 +507,7 @@ class QueryManager {
 
     setSubtitle(args) {
         const video = this.getVideo(args.identifier);
-        if(args.unified) {
+        if (args.unified) {
             this.setUnifiedSubtitle(video.videos, args);
         }
         video.downloadSubs = args.enabled;
@@ -517,17 +517,17 @@ class QueryManager {
 
     setGlobalSubtitle(value) {
         this.environment.mainDownloadSubs = value;
-        for(const video of this.managedVideos) {
+        for (const video of this.managedVideos) {
             video.downloadSubs = value;
         }
     }
 
     isDownloadable(video) {
         let usedVideo = video;
-        if(video.type == null) {
+        if (video.type == null) {
             usedVideo = this.getVideo(video);
         }
-        if(usedVideo.videos != null && !usedVideo.downloaded) return true;
+        if (usedVideo.videos != null && !usedVideo.downloaded) return true;
         return !(usedVideo == null || usedVideo.type !== "single" || usedVideo.error || usedVideo.downloaded)
     }
 
@@ -540,12 +540,12 @@ class QueryManager {
     getTaskList() {
         const urlList = []
         const filteredUrlList = [];
-        for(const video of this.managedVideos) {
+        for (const video of this.managedVideos) {
             urlList.push(video.url)
         }
-        for(const video of this.playlistMetadata) {
-            for(let i = 0; i < urlList.length; i++) {
-                if(urlList[i] === video.video_url || urlList[i] === video.playlist_url) {
+        for (const video of this.playlistMetadata) {
+            for (let i = 0; i < urlList.length; i++) {
+                if (urlList[i] === video.video_url || urlList[i] === video.playlist_url) {
                     urlList.splice(i, 1);
                     i--;
                     filteredUrlList.push(video.playlist_url);
@@ -555,7 +555,7 @@ class QueryManager {
             }
         }
         const dedupedFilteredUrlList = [...new Set(filteredUrlList)];
-        if(dedupedFilteredUrlList.length === 0) {
+        if (dedupedFilteredUrlList.length === 0) {
             return urlList;
         } else {
             return dedupedFilteredUrlList;
@@ -564,7 +564,7 @@ class QueryManager {
 
     loadTaskList(taskList) {
         let count = 0;
-        for(const url of taskList) {
+        for (const url of taskList) {
             this.manage(url);
             count++;
         }

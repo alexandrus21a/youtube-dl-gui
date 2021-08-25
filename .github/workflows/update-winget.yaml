@@ -21,4 +21,4 @@ jobs:
         shell: cmd
         run: |
           curl https://aka.ms/wingetcreate/latest -L --output wingetcreate.exe
-          wingetcreate.exe update alexandrus21a.youtubify -s true -u https://github.com/alexandrus21a/youtubify/releases/download/v%APP_VERSION%/YouTube-Downloader-GUI-Setup-%APP_VERSION%.exe -v %APP_VERSION%  -t %WINGET_TOKEN%
+          wingetcreate.exe update alexandrus21a.youtubify -s true -u https://github.com/alexandrus21a/youtubify/releases/download/v%APP_VERSION%/Youtubify.Setup-%APP_VERSION%.exe -v %APP_VERSION%  -t %WINGET_TOKEN%

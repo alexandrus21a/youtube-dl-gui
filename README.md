@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/alexandrus21a/youtubify/v2.0.0/renderer/img/icon.png" alt="logo" align="left" height="100"/>
 
-# youtubify ![version badge](https://img.shields.io/github/v/release/alexandrus21a/youtubify?label=latest-release) ![GitHub](https://img.shields.io/github/license/alexandrus21a/youtubify) ![CI badge](https://img.shields.io/github/workflow/status/alexandrus21a/youtubify/CI?label=CI) ![coverage badge](https://img.shields.io/codecov/c/github/alexandrus21a/youtubify)
+# youtubify ![version badge](https://img.shields.io/github/v/release/alexandrus21a/youtubify?label=latest-release) ![GitHub](https://img.shields.io/github/license/alexandrus21a/youtubify) [![CodeFactor](https://www.codefactor.io/repository/github/alexandrus21a/youtubify/badge)](https://www.codefactor.io/repository/github/alexandrus21a/youtubify)
 [https://alexandrus21a.github.io/youtubify](https://alexandrus21a.github.io/youtubify)
 
 A cross-platform GUI for youtube-dl made in Electron and node.js
