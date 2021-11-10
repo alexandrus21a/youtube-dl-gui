@@ -93,12 +93,6 @@ async function setDownloadButton() {
 
 (function() {
     setDownloadButton().then(() => console.log("Download button configured"));
-    document.getElementById("hamburger").addEventListener('click', () => {
-        const nav = document.getElementById("nav-list")
-        const opened = nav.style.display !== "none"
-        console.log(opened)
-        nav.style.display = opened ? "none" : "block"
-    })
     document.getElementById("msBadge").addEventListener("click", () => {
         gtag('event', 'microsoft_badge');
     });
