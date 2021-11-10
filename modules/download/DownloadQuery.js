@@ -11,6 +11,8 @@ class DownloadQuery extends Query {
         this.video = video;
         this.progressBar = progressBar;
         this.format = video.formats[video.selected_format_index];
+        console.log(url);
+        console.log(this.url);
     }
 
     cancel() {
@@ -18,13 +20,14 @@ class DownloadQuery extends Query {
     }
 
     async connect() {
+
         let args = [];
         let output = path.join(this.environment.settings.downloadPath, Utils.resolvePlaylistPlaceholders(this.environment.settings.nameFormat, this.playlistMeta));
-        if(this.video.audioOnly) {
+        if (this.video.audioOnly) {
             let audioQuality = this.video.audioQuality;
-            if(audioQuality === "best") {
+            if (audioQuality === "best") {
                 audioQuality = "0";
-            } else if(audioQuality === "worst") {
+            } else if (audioQuality === "worst") {
                 audioQuality = "9";
             }
             const audioOutputFormat = this.environment.settings.audioOutputFormat;
@@ -35,14 +38,14 @@ class DownloadQuery extends Query {
                 '-o', output,
                 '--output-na-placeholder', ""
             ];
-            if(this.video.selectedAudioEncoding !== "none") {
+            if (this.video.selectedAudioEncoding !== "none") {
                 args.push("-f");
                 args.push("bestaudio[acodec=" + this.video.selectedAudioEncoding + "]/bestaudio");
             }
-            if(audioOutputFormat !== "none") {
+            if (audioOutputFormat !== "none") {
                 args.push('--audio-format', audioOutputFormat);
             }
-            if(audioOutputFormat === "m4a" || audioOutputFormat === "mp3" || audioOutputFormat === "none") {
+            if (audioOutputFormat === "m4a" || audioOutputFormat === "mp3" || audioOutputFormat === "none") {
                 args.push("--embed-thumbnail");
             }
         } else {
@@ -50,7 +53,7 @@ class DownloadQuery extends Query {
                 let format;
                 const encoding = this.video.selectedEncoding === "none" ? "" : "[vcodec=" + this.video.selectedEncoding + "]";
                 const audioEncoding = this.video.selectedAudioEncoding === "none" ? "" : "[acodec=" + this.video.selectedAudioEncoding + "]";
-                if(this.video.videoOnly) {
+                if (this.video.videoOnly) {
                     format = `bestvideo[height=${this.format.height}][fps=${this.format.fps}]${encoding}/bestvideo[height=${this.format.height}][fps=${this.format.fps}]/bestvideo[height=${this.format.height}]/best[height=${this.format.height}]/bestvideo/best`;
                     if (this.format.fps == null) {
                         format = `bestvideo[height=${this.format.height}]${encoding}/bestvideo[height=${this.format.height}]/best[height=${this.format.height}]/bestvideo/best`
@@ -91,25 +94,25 @@ class DownloadQuery extends Query {
                 args.push(this.environment.settings.outputFormat);
             }
         }
-        if(this.environment.settings.downloadMetadata) {
+        if (this.environment.settings.downloadMetadata) {
             args.push('--add-metadata');
         }
-        if(this.environment.settings.downloadThumbnail) {
+        if (this.environment.settings.downloadThumbnail) {
             args.push('--write-thumbnail');
         }
-        if(this.environment.settings.keepUnmerged) args.push('--keep-video');
+        if (this.environment.settings.keepUnmerged) args.push('--keep-video');
         let destinationCount = 0;
         let initialReset = false;
         let result = null;
         try {
             result = await this.environment.downloadLimiter.schedule(() => this.start(this.url, args, (liveData) => {
                 const perLine = liveData.split("\n");
-                for(const line of perLine) {
+                for (const line of perLine) {
                     this.video.setFilename(line);
-                    if(line.lastIndexOf("[download]") !== line.indexOf("[download]")) {
+                    if (line.lastIndexOf("[download]") !== line.indexOf("[download]")) {
                         const splitLines = line.split("[");
-                        for(const splitLine of splitLines) {
-                            if(splitLine.trim() !== "") {
+                        for (const splitLine of splitLines) {
+                            if (splitLine.trim() !== "") {
                                 this.environment.logger.log(this.video.identifier, "[" + splitLine.trim());
                             }
                         }
@@ -145,7 +148,7 @@ class DownloadQuery extends Query {
             this.environment.errorHandler.checkError(exception, this.video.identifier);
             return exception;
         }
-        if(this.video.audioOnly) {
+        if (this.video.audioOnly) {
             await this.removeThumbnail(".jpg");
         }
         return result;
@@ -153,14 +156,14 @@ class DownloadQuery extends Query {
 
     async removeThumbnail(extension) {
         const filename = this.video.filename;
-        if(filename != null) {
+        if (filename != null) {
             const filenameExt = path.basename(filename, path.extname(filename)) + extension;
             const filenameAbs = path.join(this.video.downloadedPath, filenameExt);
             try {
                 await fs.promises.unlink(filenameAbs);
-            } catch(e) {
+            } catch (e) {
                 console.log("No left-over thumbnail found to remove. (" + filenameExt + ")")
-                if(extension !== ".webp") {
+                if (extension !== ".webp") {
                     await this.removeThumbnail(".webp");
                 }
             }

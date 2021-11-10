@@ -93,6 +93,7 @@ describe('generate filepaths', () => {
 describe('create home folder', () => {
     it('does not copy the files if the folder already exists', async () => {
         const instance = instanceBuilder(true);
+        instance.unpackedPrefix = "test/unpacked/prefix";
         fs.copyFileSync = jest.fn();
         mkdirp.mockResolvedValue(null);
         await instance.createHomeFolder();
@@ -112,6 +113,7 @@ describe('create home folder', () => {
 describe('create portable folder', () => {
     it('does not copy the files if the folder already exists', async () => {
         const instance = instanceBuilder(true);
+        instance.unpackedPrefix = "test/unpacked/prefix";
         fs.copyFileSync = jest.fn();
         mkdirp.mockResolvedValue(null);
         await instance.createAppDataFolder();
@@ -125,6 +127,17 @@ describe('create portable folder', () => {
         await instance.createAppDataFolder()
         expect(fs.copyFileSync).toBeCalledTimes(4);
         joinSpy.mockRestore();
+    });
+});
+
+describe('checkFfmpeg', () => {
+    it('should do nothing when ffmpeg exists', () => {
+        const instance = instanceBuilder(true);
+        instance.ffmpeg = "ffmpeg/path";
+        fs.copyFileSync = jest.fn();
+        fs.promises.access = jest.fn().mockResolvedValue(true);
+        instance.checkFfmpeg();
+        expect(fs.copyFileSync).toBeCalledTimes(0);
     });
 });
 

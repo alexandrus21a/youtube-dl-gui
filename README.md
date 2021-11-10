@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/alexandrus21a/youtubify/v2.0.0/renderer/img/icon.png" alt="logo" align="left" height="100"/>
 
-# youtubify ![version badge](https://img.shields.io/github/v/release/alexandrus21a/youtubify?label=latest-release) ![GitHub](https://img.shields.io/github/license/alexandrus21a/youtubify) [![CodeFactor](https://www.codefactor.io/repository/github/alexandrus21a/youtubify/badge)](https://www.codefactor.io/repository/github/alexandrus21a/youtubify)
+# Youtubify (youtubify) <br> ![version badge](https://img.shields.io/github/v/release/alexandrus21a/youtubify?label=latest-release) ![GitHub](https://img.shields.io/github/license/alexandrus21a/youtubify) ![coverage badge](https://img.shields.io/codecov/c/github/alexandrus21a/youtubify) ![downloads](https://img.shields.io/github/downloads/alexandrus21a/youtubify/total) ![CI badge](https://img.shields.io/github/workflow/status/alexandrus21a/youtubify/CI?label=CI) 
 [https://alexandrus21a.github.io/youtubify](https://alexandrus21a.github.io/youtubify)
 
 A cross-platform GUI for youtube-dl made in Electron and node.js
@@ -52,5 +52,5 @@ Feel free to [request a new feature](https://github.com/alexandrus21a/youtubify/
 
 
 ## Liability & License notice
-youtubify and its maintainers cannot be held liable for misuse of this application, as stated in the [AGPL-3.0 license (section 16)](https://github.com/alexandrus21a/youtubify/blob/master/LICENSE).  
+Youtube-dl-gui and its maintainers cannot be held liable for misuse of this application, as stated in the [AGPL-3.0 license (section 16)](https://github.com/alexandrus21a/youtubify/blob/master/LICENSE).  
 The maintainers of youtubify do not in any way condone the use of this application in practices that violate local laws such as but not limited to the DMCA. The maintainers of this application call upon the personal responsibility of its users to use this application in a fair way, as it is intended to be used.

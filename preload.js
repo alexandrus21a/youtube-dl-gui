@@ -6,7 +6,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 function initSentry() {
     if (process.argv[2] === '--dev' && !process.argv.includes("--sentry")) return;
     Sentry.init({
-        dsn: "https://32ee3fa672804aa592a9b6a085a436b7@o564437.ingest.sentry.io/5895094",
+        dsn: process.env.SENTRY_DSN,
         release: "youtubify@" + version,
         sendDefaultPii: true,
         integrations: [new Tracing.Integrations.BrowserTracing()],

@@ -1,7 +1,7 @@
 {
     "name": "youtubify",
-    "version": "2.3.0",
-    "description": "youtubify",
+    "version": "2.3.1",
+    "description": "Youtubify",
     "main": "main.js",
     "scripts": {
         "start": "electron . --dev",
@@ -23,13 +23,16 @@
         "gui",
         "interface"
     ],
-    "author": "alexandrus21a",
+    "author": "Alexandrus21",
     "license": "AGPL-3.0-only",
     "devDependencies": {
-        "electron": "^13.1.7",
+        "autoprefixer": "^9.8.8",
+        "electron": "^15.2.0",
         "electron-builder": "^22.9.1",
         "eslint": "^7.21.0",
-        "jest": "^26.6.3"
+        "jest": "^26.6.3",
+        "postcss": "^7.0.39",
+        "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
     },
     "dependencies": {
         "@sentry/electron": "^2.5.0",
@@ -56,14 +59,14 @@
     },
     "build": {
         "afterPack": "./build/appimage-fix.js",
-        "appId": "com.alexandrus21a.youtubify",
+        "appId": "com.alexandrus21.youtubify",
         "asarUnpack": "**/binaries/*",
         "nsis": {
             "include": "./build/vcredist.nsh",
             "packElevateHelper": false
         },
         "productName": "Youtubify",
-        "copyright": "Copyright © 2020-2021 alexandrus21a",
+        "copyright": "Copyright © 2020-2021 Alexandrus21",
         "win": {
             "target": "nsis",
             "icon": "renderer/img/icon.ico",
@@ -107,12 +110,12 @@
         },
         "linux": {
             "target": "AppImage",
-            "executableName": "open-video-downloader",
+            "executableName": "youtubify",
             "icon": "renderer/img/icon.png",
             "synopsis": "A cross-platform GUI for youtube-dl",
             "category": "X-utility",
             "desktop": {
-                "Name": "Open-Video-Downloader",
+                "Name": "Youtubify",
                 "Icon": "youtubify",
                 "Comment": "A cross-platform GUI for youtube-dl"
             },

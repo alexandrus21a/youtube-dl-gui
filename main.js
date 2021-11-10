@@ -187,9 +187,9 @@ function createWindow(env) {
     win = new BrowserWindow({
         show: false,
         minWidth: 840,
-        minHeight: 650,
-        width: 860,
-        height: 840,
+        minHeight: 810,
+        width: 840,
+        height: 925,
         backgroundColor: env.settings.theme === "dark" ? '#212121' : '#ffffff',
         titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
         frame: false,
@@ -218,7 +218,7 @@ function createWindow(env) {
 }
 
 app.on('ready', async() => {
-    app.setAppUserModelId("com.alexandrus21a.youtubify");
+    app.setAppUserModelId("com.alexandrus21.youtubify");
     env = new Environment(app, analytics);
     await env.initialize();
     createWindow(env);
