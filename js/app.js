@@ -42,13 +42,13 @@ function getAssetDownload(os, release) {
     let assetName;
     switch (os) {
         case "Windows":
-            assetName = "YouTube-Downloader-GUI-Setup-" + version + ".exe"
+            assetName = "Youtubify-" + version + ".exe"
             break
         case "MacOS":
-            assetName = "YouTube-Downloader-GUI-" + version + ".dmg"
+            assetName = "Youtubify-" + version + ".dmg"
             break
         case "Linux":
-            assetName = "YouTube-Downloader-GUI-" + version + ".AppImage"
+            assetName = "Youtubify-" + version + ".AppImage"
     }
 
     for(const asset of release.assets) {
@@ -60,9 +60,9 @@ function getAssetDownload(os, release) {
 
 async function setDownloadButton() {
     const os = getOS();
-    const versionData = await httpGet("https://api.github.com/repos/jely2002/youtube-dl-gui/releases/latest");
+    const versionData = await httpGet("https://api.github.com/repos/alexandrus21a/youtubify/releases/latest");
     if(versionData == null) {
-        const download = 'https://github.com/jely2002/youtube-dl-gui/releases/latest'
+        const download = 'https://github.com/alexandrus21a/youtubify/releases/latest'
         document.getElementById("download-type").innerHTML = "For " + os;
         document.getElementById("download-button").addEventListener('click', () => {
             window.location.href = download
@@ -77,7 +77,7 @@ async function setDownloadButton() {
         })
         document.getElementById("download-link").setAttribute('href', download)
     } else {
-        const download = "https://github.com/jely2002/youtube-dl-gui/releases/latest"
+        const download = "https://github.com/alexandrus21a/Youtubify/releases/latest"
         document.getElementById("download-type").style.display = "none"
         document.getElementById("download-button").addEventListener('click', () => {
             window.location.href = download
