@@ -998,6 +998,7 @@ async function getSettings() {
     $('#sizeSetting').val(settings.sizeMode);
     $('#splitMode').val(settings.splitMode);
     $('#theme').val(settings.theme);
+    $('#language').val(settings.language);
     $('#version').html("<strong>Version: </strong>" + settings.version);
     window.settings = settings;
 }
